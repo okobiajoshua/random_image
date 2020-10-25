@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -36,8 +37,15 @@ func main() {
 	r.HandleFunc("/image/{id}", ih.GetImageByID).Methods(http.MethodGet)
 	r.HandleFunc("/images", ih.GetStoredImages).Methods(http.MethodGet)
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
+	addr := fmt.Sprintf("0.0.0.0:%s", port)
 	srv := &http.Server{
-		Addr: "0.0.0.0:8082",
+		Addr: addr,
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
